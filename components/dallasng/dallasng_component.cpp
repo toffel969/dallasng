@@ -27,7 +27,7 @@ namespace esphome
         if (sensor->get_index().has_value())
         {
           auto index = *sensor->get_index();
-          if (index > found_sensors_.size())
+          if (index >= found_sensors_.size())
           {
             ESP_LOGW(TAG, "Index %d higher than the number of sensors (%d)", index, found_sensors_.size());
             status_set_error();
@@ -100,9 +100,12 @@ namespace esphome
       one_wire_->addressAll();
       one_wire_->writeByte(DSTherm::CMD_CONVERT_T);
 
-      for (auto *sensor : sensors_)
+      // Use a numeric timeout id per sensor: the const char* overload of set_timeout()
+      // does not copy the name, so passing c_str() of a temporary std::string would dangle.
+      for (uint32_t i = 0; i < sensors_.size(); i++)
       {
-        set_timeout(sensor->get_address_name(), sensor->millis_to_wait_for_conversion(), [this, sensor]
+        auto *sensor = sensors_[i];
+        set_timeout(i, sensor->millis_to_wait_for_conversion(), [this, sensor]
                     {
           float value;
           if (!sensor->try_get_temperature_c(&value)) {
