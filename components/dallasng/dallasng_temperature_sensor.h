@@ -32,7 +32,8 @@ namespace esphome
             {
                 if (address_name_.empty())
                 {
-                    address_name_ = std::string("0x") + format_hex(this->address_);
+                    char hex[64];
+                    address_name_ = std::string("0x") +format_hex_to(hex, this->address_);
                 }
 
                 return address_name_;

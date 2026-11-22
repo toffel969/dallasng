@@ -18,7 +18,8 @@ namespace esphome
       {
         uint64_t address;
         memcpy(&address, &id[0], sizeof(address));
-        ESP_LOGI(TAG, "Found dallas device 0x%s", format_hex(address).c_str());
+        char hex[64];
+        ESP_LOGI(TAG, "Found dallas device 0x%s", format_hex_to(hex, address));
         this->found_sensors_.push_back(address);
       }
 
@@ -34,7 +35,8 @@ namespace esphome
             continue;
           }
           auto address = found_sensors_[index];
-          ESP_LOGI(TAG, "Sensor index %d has address 0x%s", index, format_hex(address).c_str());
+          char hex[64];
+          ESP_LOGI(TAG, "Sensor index %d has address 0x%s", index, format_hex_to(hex, address));
           sensor->set_address(address);
         }
 
@@ -60,7 +62,8 @@ namespace esphome
         ESP_LOGD(TAG, "  Found sensors:");
         for (auto &address : this->found_sensors_)
         {
-          ESP_LOGD(TAG, "    0x%s", format_hex(address).c_str());
+          char hex[64];
+          ESP_LOGD(TAG, "    0x%s", format_hex_to(hex, address));
         }
       }
 
